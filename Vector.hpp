@@ -305,6 +305,7 @@ namespace GLVM::Core
     template<class T>
     void Vector<T>::Print()
     {
+		std::cout << "Start of container" << std::endl;
         for(int i = 0; i < iSize_; ++i)
             std::cout << aVector_Container_[i] << std::endl;
 

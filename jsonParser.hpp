@@ -182,19 +182,25 @@ namespace GLVM::Core
         const char* pJsonFileData_;
 		char currentChar_;
         unsigned int globalFileCounter_ = 0;
+		/// Containers for tests.
+		Vector<char> fakeStack_;
+		Vector<std::string> keys_;
+		Vector<std::string> stringValues_;
+		Vector<float> floatValues_;
+		Vector<int> intValues_;
+		Vector<std::string> boolOrNullValues_;
+		
 		Vector<JsonValue> stackOfJsonValues_;
-		bool searchKeyFlag = false;
+		bool keyFlag = false;
 	    std::string lastKey_ = "";
-		// std::string stringBuffer_ = "";
+		std::string bufferString_ = "";
 
     public:
         void ReadFile(const char* _filePath);
         void Parse();
-		void NextInitialValueToken();
 		std::string BoolOrNullParse();
 		bool IsContainChar(std::string _string, char _char);
 		std::string NumberAsStringParse();
-		void NextFinalValueToken();
 		std::string StringParse();
 		GLVM::Core::Vector<char> StringToVectorOfChars(std::string _string);
 		int ParseInteger(GLVM::Core::Vector<char> _word);

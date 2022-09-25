@@ -28,192 +28,70 @@ namespace GLVM::Core
     }
 
     void CJsonParser::Parse() {
+		currentChar_ = pJsonFileData_[globalFileCounter_];
 		while (currentChar_ != '\0') {
-			if (searchKeyFlag)
-				lastKey_ = StringParse();
-			
-			NextInitialValueToken();
-
-			while (1) {
-				if (currentChar_ == ' ' || currentChar_ == '\n') {
-					++globalFileCounter_;
-					currentChar_ = pJsonFileData_[globalFileCounter_];
-					continue;
-				} else
-					break;
-			}
-
-			if (currentChar_ == ',') {
-				++globalFileCounter_;
-				continue;
-			} else if (currentChar_ == '}' || currentChar_ == ']') {
-				// stackOfJsonValues_.Pop();
-
-				// if (stackOfJsonValues_.GetHead().type == JSON_OBJECT)
-				// 	searchKeyFlag = true;
-				// else
-				// 	searchKeyFlag = false;
-
-				++globalFileCounter_;
-				
-				while (1) {
-					currentChar_ = pJsonFileData_[globalFileCounter_];
-					std::cout << currentChar_ << std::endl;
-					if (currentChar_ == '}' || currentChar_ == ']') {
-						// stackOfJsonValues_.Pop();
-						// if (stackOfJsonValues_.GetHead().type == JSON_OBJECT)
-						// 	searchKeyFlag = true;
-						// else
-						// 	searchKeyFlag = false;
-						
-						++globalFileCounter_;
-						continue;
-					} else if (currentChar_ == ',') {
-						++globalFileCounter_;
-						break;
-					}
-
-					++globalFileCounter_;
-					continue;
-				}
-
-				continue;
-			} else {
-				searchKeyFlag = false;
-				++globalFileCounter_;
-			}
-		}
-	}
-
-	void CJsonParser::NextInitialValueToken() {
-		while (1) {
 			currentChar_ = pJsonFileData_[globalFileCounter_];
-			if (currentChar_ == '{') {
-				std::cout << "{" << std::endl;
-				
-				// JsonValue* jsonObject = new JsonValue;
-				// jsonObject->type = JSON_OBJECT;
-				// new(&jsonObject->value.object) HashMap<JsonValue>;
 
-				// if (stackOfJsonValues_.GetSize() == 0)
-				// 	stackOfJsonValues_.Push(*jsonObject);
-				// else {
-				// 	stackOfJsonValues_.Push(*jsonObject);
-				// 	if (searchKeyFlag)
-				// 		stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = *jsonObject;
-				// 	else
-				// 		stackOfJsonValues_.GetHead().value.array.Push(*jsonObject);
-				// }
-
-				// if (searchKeyFlag)
-				// 	std::cout << "stack object value: " << stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()].value.fNumber << std::endl;
-				// else
-				// 	std::cout << "stack object value: " << stackOfJsonValues_.GetHead().value.array.GetHead().value. << std::endl;
-					
-				searchKeyFlag = true;
+			if (currentChar_ == '"' && keyFlag) {
+				lastKey_ = StringParse();
+				while (currentChar_ == ' ' || currentChar_ == ':') {
 				++globalFileCounter_;
-				return;
-			} else if (currentChar_ == '[') {
-				std::cout << "[" << std::endl;
+				currentChar_ = pJsonFileData_[globalFileCounter_];
+				}
+				keys_.Push(lastKey_);
+				std::cout << "key " << lastKey_ << std::endl;
+			}
+			
+			if (currentChar_ == '"') {
+				bufferString_ = StringParse();
 
-				// JsonValue* jsonArray = new JsonValue;
-				// jsonArray->type = JSON_ARRAY;
-				// new(&jsonArray->value.array) Vector<JsonValue>;
-
-				// if (stackOfJsonValues_.GetSize() == 0)
-				// 	stackOfJsonValues_.Push(*jsonArray);
-				// else {
-				// 	stackOfJsonValues_.Push(*jsonArray);
-				// 	if (searchKeyFlag)
-				// 		stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = *jsonArray;
-				// 	else
-				// 		stackOfJsonValues_.GetHead().value.array.Push(*jsonArray);
-				// }
-
-//				std::cout << "stack array value: " << stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()].value.fNumber << std::endl;
-				
-				searchKeyFlag = false;
-				++globalFileCounter_;
-				return;
-			} else if (currentChar_ == '"') {
-				++globalFileCounter_;
-				std::string stringValue = StringParse();
-
-				// JsonValue* jsonString = new JsonValue;
-				// jsonString->type = JSON_STRING;
-				// new(&jsonString->value.string) std::string{stringValue};
-
-				// if (searchKeyFlag && stackOfJsonValues_.GetSize() > 0) {
-				// 	assert(stackOfJsonValues_.GetHead().type == JSON_OBJECT);
-				// 	stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = *jsonString;
-				// } else if (!searchKeyFlag && stackOfJsonValues_.GetSize() > 0) {
-				// 	assert(stackOfJsonValues_.GetHead().type == JSON_ARRAY);
-				// 	stackOfJsonValues_.GetHead().value.array.Push(*jsonString);
-				// }
-				
-				std::cout << stringValue << std::endl;
-				return;
+				stringValues_.Push(bufferString_);
+				std::cout << "value " << bufferString_ << std::endl;
 			} else if ((currentChar_ >= '0' && currentChar_ <= '9') ||
-				       currentChar_ == '+' || currentChar_ == '-') {
-				std::string numberAsString = NumberAsStringParse();
-				GLVM::Core::Vector<char> vector = StringToVectorOfChars(numberAsString);
-				std::cout << numberAsString << std::endl;
+					   currentChar_ == '+' || currentChar_ == '-') {
+				bufferString_ = NumberAsStringParse();
+				GLVM::Core::Vector<char> vector = StringToVectorOfChars(bufferString_);
 				float fNumber = 0.0f;
 				int iNumber = 0;
-				if (IsContainChar(numberAsString, '.')) {
+				if (IsContainChar(bufferString_, '.')) {
 					fNumber = ParseFloating(vector);
-// 					JsonValue* jsonFnumber = new JsonValue;
-// 					jsonFnumber->type = JSON_FLOAT_NUMBER;
-// 					jsonFnumber->value.fNumber = fNumber;
-					std::cout << "Float: " << fNumber << std::endl;
-// 					if (searchKeyFlag && stackOfJsonValues_.GetSize() > 0)
-// 						stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = *jsonFnumber;
-// 					else if (!searchKeyFlag && stackOfJsonValues_.GetSize() > 0)
-// 						stackOfJsonValues_.GetHead().value.array.Push(*jsonFnumber);
-// 					std::cout << "stack float value: " << stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()].value.fNumber << std::endl;
+					floatValues_.Push(fNumber);
 				} else {
-// 					iNumber = ParseInteger(vector);
-// 					JsonValue* jsonInumber = new JsonValue;
-// 					jsonInumber->type = JSON_INTEGER_NUMBER;
-// 					jsonInumber->value.iNumber = iNumber;
-					std::cout << "Int: " << iNumber<< std::endl;
-// 					if (searchKeyFlag && stackOfJsonValues_.GetSize() > 0)
-// 						stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = *jsonInumber;
-// 					else if (!searchKeyFlag && stackOfJsonValues_.GetSize() > 0)
-// 						stackOfJsonValues_.GetHead().value.array.Push(*jsonInumber);
-// 					std::cout << "stack int value: " << stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()].value.iNumber << std::endl;
+ 					iNumber = ParseInteger(vector);
+					intValues_.Push(iNumber);
 				}
-				
-				return;
+				std::cout << bufferString_ << std::endl;
 			} else if (currentChar_ == 't' ||
 				       currentChar_ == 'f' ||
 				       currentChar_ == 'n') {
 				std::string boolOrNullString = BoolOrNullParse();
-				JsonValue* jsonBoolOrNull = new JsonValue;
-				
-				// if (boolOrNullString == "true") {
-				// 	jsonBoolOrNull->type = JSON_BOOLEAN;
-				// 	jsonBoolOrNull->value.boolean = true;
-				// } else if (boolOrNullString == "false") {
-				// 	jsonBoolOrNull->type = JSON_BOOLEAN;
-				// 	jsonBoolOrNull->value.boolean = false;
-				// } else if (boolOrNullString == "null") {
-				// 	jsonBoolOrNull->type = JSON_NULL;
-				// 	jsonBoolOrNull->value.null = NULL;
-				// }
-
-				// if (searchKeyFlag && stackOfJsonValues_.GetSize() > 0)
-				// 	stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = *jsonBoolOrNull;
-				// else if (!searchKeyFlag && stackOfJsonValues_.GetSize() > 0)
-				// 	stackOfJsonValues_.GetHead().value.array.Push(*jsonBoolOrNull);
-				
+				boolOrNullValues_.Push(boolOrNullString);
 				std::cout << boolOrNullString << std::endl;
-				return;
-			} else if (currentChar_ == '\0') {
-				return;
-			} else {
-				++globalFileCounter_;
-			}
+			} else if (currentChar_ == '{') {
+				fakeStack_.Push('{');
+				keyFlag = true;
+				std::cout << currentChar_ << std::endl;
+			} else if (currentChar_ == '[') {
+				fakeStack_.Push('[');
+				keyFlag = false;
+				std::cout << currentChar_ << std::endl;
+			} else if (currentChar_ == '}') {
+				fakeStack_.Pop();
+				if (fakeStack_.GetSize() && fakeStack_.GetHead() == '{')
+					keyFlag = true;
+				else
+					keyFlag = false;
+				std::cout << currentChar_ << std::endl;
+			} else if (currentChar_ == ']') {
+				fakeStack_.Pop();
+				if (fakeStack_.GetSize() && fakeStack_.GetHead() == '{')
+					keyFlag = true;
+				else
+					keyFlag = false;
+				std::cout << currentChar_ << std::endl;
+			} 
+			
+			++globalFileCounter_;
 		}
 	}
 
@@ -253,24 +131,15 @@ namespace GLVM::Core
 				return numberAsString;
 		}
 	}
-	
-	void CJsonParser::NextFinalValueToken() {
-		while (1) {
-			currentChar_ = pJsonFileData_[globalFileCounter_];
-			if (currentChar_ == ']') {
-				
-			} else if (currentChar_ == '}') {
-				
-			}
-		}
-	}
-	
+		
  	std::string CJsonParser::StringParse() {
+		++globalFileCounter_;
 		std::string localBuffer = "";
 		while (1) {
 			currentChar_ = pJsonFileData_[globalFileCounter_];
 			if (currentChar_ == '"') {
 				++globalFileCounter_;
+				currentChar_ = pJsonFileData_[globalFileCounter_];
 				return localBuffer;
 			} else {
 				localBuffer.push_back(currentChar_);
