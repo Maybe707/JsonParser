@@ -51,27 +51,27 @@ namespace GLVM::Core
 		
 		JsonValue(const JsonValue& _value) {
 			type = JSON_INVALID_VALUE;
-			switch (type) {
-			case JSON_INVALID_VALUE:
-				break;
-			case JSON_OBJECT:
-				value.object.~HashMap();
-				break;
-			case JSON_INTEGER_NUMBER:
-				break;
-			case JSON_FLOAT_NUMBER:
-				break;
-			case JSON_STRING:
-				value.string.~basic_string();
-				break;
-			case JSON_BOOLEAN:
-				break;
-			case JSON_NULL:
-				break;
-			case JSON_ARRAY:
-				value.array.~Vector();
-				break;
-			}
+			// switch (type) {
+			// case JSON_INVALID_VALUE:
+			// 	break;
+			// case JSON_OBJECT:
+			// 	value.object.~HashMap();
+			// 	break;
+			// case JSON_INTEGER_NUMBER:
+			// 	break;
+			// case JSON_FLOAT_NUMBER:
+			// 	break;
+			// case JSON_STRING:
+			// 	value.string.~basic_string();
+			// 	break;
+			// case JSON_BOOLEAN:
+			// 	break;
+			// case JSON_NULL:
+			// 	break;
+			// case JSON_ARRAY:
+			// 	value.array.~Vector();
+			// 	break;
+			// }
 			
 			switch (_value.type) {
 			case JSON_OBJECT:
@@ -183,12 +183,12 @@ namespace GLVM::Core
 		char currentChar_;
         unsigned int globalFileCounter_ = 0;
 		/// Containers for tests.
-		Vector<char> fakeStack_;
-		Vector<std::string> keys_;
-		Vector<std::string> stringValues_;
-		Vector<float> floatValues_;
-		Vector<int> intValues_;
-		Vector<std::string> boolOrNullValues_;
+		// Vector<char> fakeStack_;
+		// Vector<std::string> keys_;
+		// Vector<std::string> stringValues_;
+		// Vector<float> floatValues_;
+		// Vector<int> intValues_;
+		// Vector<std::string> boolOrNullValues_;
 		
 		Vector<JsonValue> stackOfJsonValues_;
 		bool keyFlag = false;
