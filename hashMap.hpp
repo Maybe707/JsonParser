@@ -73,7 +73,7 @@ public:
 
         if (hash > capacity_)
             Rehash(hash);
-        
+
         return Link(hashMap_[hash], _key);
     }
 

@@ -48,30 +48,29 @@ namespace GLVM::Core
         JsonType type;
 
 		JsonValue() { type = JSON_INVALID_VALUE; }
+		JsonValue(std::string _string) {
+			type = JSON_STRING;
+			new (&value.string) std::string{_string};
+		}
+		JsonValue(float _float) {
+			type = JSON_FLOAT_NUMBER;
+			value.fNumber = _float;
+		}
+		JsonValue(int _int) {
+			type = JSON_INTEGER_NUMBER;
+			value.iNumber = _int;
+		}
+		JsonValue(bool _bool) {
+			type = JSON_BOOLEAN;
+			value.boolean = _bool;
+		}
+		// JsonValue(void* _null) {
+		// 	type = JSON_NULL;
+		// 	value.null = _null;
+		// }
 		
 		JsonValue(const JsonValue& _value) {
 			type = JSON_INVALID_VALUE;
-			// switch (type) {
-			// case JSON_INVALID_VALUE:
-			// 	break;
-			// case JSON_OBJECT:
-			// 	value.object.~HashMap();
-			// 	break;
-			// case JSON_INTEGER_NUMBER:
-			// 	break;
-			// case JSON_FLOAT_NUMBER:
-			// 	break;
-			// case JSON_STRING:
-			// 	value.string.~basic_string();
-			// 	break;
-			// case JSON_BOOLEAN:
-			// 	break;
-			// case JSON_NULL:
-			// 	break;
-			// case JSON_ARRAY:
-			// 	value.array.~Vector();
-			// 	break;
-			// }
 			
 			switch (_value.type) {
 			case JSON_OBJECT:
@@ -160,6 +159,7 @@ namespace GLVM::Core
 				break;
 			case JSON_STRING:
 				new (&value.string) std::string{_value.value.string};
+				break;
 			case JSON_BOOLEAN:
 				value.boolean = _value.value.boolean;
 				break;
@@ -182,20 +182,15 @@ namespace GLVM::Core
         const char* pJsonFileData_;
 		char currentChar_;
         unsigned int globalFileCounter_ = 0;
-		/// Containers for tests.
-		// Vector<char> fakeStack_;
-		// Vector<std::string> keys_;
-		// Vector<std::string> stringValues_;
-		// Vector<float> floatValues_;
-		// Vector<int> intValues_;
-		// Vector<std::string> boolOrNullValues_;
 		
-		Vector<JsonValue> stackOfJsonValues_;
-		bool keyFlag = false;
+		Vector<JsonValue*> stackOfJsonValues_;
+		JsonValue* root_;
+		bool keyFlag = true;
 	    std::string lastKey_ = "";
 		std::string bufferString_ = "";
 
     public:
+		JsonValue* GetRoot() { return root_; }
         void ReadFile(const char* _filePath);
         void Parse();
 		std::string BoolOrNullParse();

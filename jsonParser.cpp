@@ -29,6 +29,7 @@ namespace GLVM::Core
 
     void CJsonParser::Parse() {
 		currentChar_ = pJsonFileData_[globalFileCounter_];
+		
 		while (currentChar_ != '\0') {
 			currentChar_ = pJsonFileData_[globalFileCounter_];
 
@@ -45,18 +46,18 @@ namespace GLVM::Core
 			if (currentChar_ == '"') {
 				bufferString_ = StringParse();
 //				stringValues_.Push(bufferString_);
-				std::cout << "value " << bufferString_ << std::endl;
-
+				std::cout << "value str " << bufferString_ << std::endl;
+				std::cout << "Key: " << keyFlag << std::endl;
 				if (keyFlag) {
-					JsonValue jsonString;
-					jsonString.type = JSON_STRING;
-					new (&jsonString.value.string) std::string{bufferString_};
-					stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = jsonString;
+					JsonValue jsonString(bufferString_);
+					// jsonString.type = JSON_STRING;
+					// new (&jsonString.value.string) std::string{bufferString_};
+					stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = jsonString;
 				} else {
- 					JsonValue jsonString;
-					jsonString.type = JSON_STRING;
-					new (&jsonString.value.string) std::string{bufferString_};
-					stackOfJsonValues_.GetHead().value.array.Push(jsonString);
+ 					JsonValue jsonString(bufferString_);
+					// jsonString.type = JSON_STRING;
+					// new (&jsonString.value.string) std::string{bufferString_};
+					stackOfJsonValues_.GetHead()->value.array.Push(jsonString);
 				}
 			} else if ((currentChar_ >= '0' && currentChar_ <= '9') ||
 					   currentChar_ == '+' || currentChar_ == '-') {
@@ -69,30 +70,30 @@ namespace GLVM::Core
 //					floatValues_.Push(fNumber);
 
 					if (keyFlag) {
-						JsonValue jsonFloat;
-						jsonFloat.type = JSON_FLOAT_NUMBER;
-						jsonFloat.value.fNumber = fNumber;
-						stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = jsonFloat;
+						JsonValue jsonFloat(fNumber);
+						// jsonFloat.type = JSON_FLOAT_NUMBER;
+						// jsonFloat.value.fNumber = fNumber;
+						stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = jsonFloat;
 					} else {
-						JsonValue jsonFloat;
-						jsonFloat.type = JSON_FLOAT_NUMBER;
-						jsonFloat.value.fNumber = fNumber;
-						stackOfJsonValues_.GetHead().value.array.Push(jsonFloat);
+						JsonValue jsonFloat(fNumber);
+						// jsonFloat.type = JSON_FLOAT_NUMBER;
+						// jsonFloat.value.fNumber = fNumber;
+						stackOfJsonValues_.GetHead()->value.array.Push(jsonFloat);
 					}
 				} else {
  					iNumber = ParseInteger(vector);
 //					intValues_.Push(iNumber);
 
 					if (keyFlag) {
-						JsonValue jsonInt;
-						jsonInt.type = JSON_INTEGER_NUMBER;
-						jsonInt.value.iNumber = iNumber;
-						stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = jsonInt;
+						JsonValue jsonInt(iNumber);
+						// jsonInt.type = JSON_INTEGER_NUMBER;
+						// jsonInt.value.iNumber = iNumber;
+						stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = jsonInt;
 					} else {
-						JsonValue jsonInt;
-						jsonInt.type = JSON_INTEGER_NUMBER;
-						jsonInt.value.iNumber = iNumber;
-						stackOfJsonValues_.GetHead().value.array.Push(jsonInt);
+						JsonValue jsonInt(iNumber);
+						// jsonInt.type = JSON_INTEGER_NUMBER;
+						// jsonInt.value.iNumber = iNumber;
+						stackOfJsonValues_.GetHead()->value.array.Push(jsonInt);
 					}
 				}
 				std::cout << bufferString_ << std::endl;
@@ -107,97 +108,95 @@ namespace GLVM::Core
 
 				if (boolOrNullString == "true") {
 					if (keyFlag) {
-						JsonValue jsonTrue;
-						jsonTrue.type = JSON_BOOLEAN;
-						jsonTrue.value.boolean = true;
-						stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = jsonTrue;
+						JsonValue jsonTrue(true);
+						// jsonTrue.type = JSON_BOOLEAN;
+						// jsonTrue.value.boolean = true;
+						stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = jsonTrue;
 					} else {
-						JsonValue jsonTrue;
-						jsonTrue.type = JSON_BOOLEAN;
-						jsonTrue.value.boolean = true;
-						stackOfJsonValues_.GetHead().value.array.Push(jsonTrue);
+						JsonValue jsonTrue(true);
+						// jsonTrue.type = JSON_BOOLEAN;
+						// jsonTrue.value.boolean = true;
+						stackOfJsonValues_.GetHead()->value.array.Push(jsonTrue);
 					}
 				} else if (boolOrNullString == "false") {
 					if (keyFlag) {
-						JsonValue jsonFalse;
-						jsonFalse.type = JSON_BOOLEAN;
-						jsonFalse.value.boolean = false;
-						stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = jsonFalse;
+						JsonValue jsonFalse(false);
+						// jsonFalse.type = JSON_BOOLEAN;
+						// jsonFalse.value.boolean = false;
+						stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = jsonFalse;
 					} else {
-						JsonValue jsonFalse;
-						jsonFalse.type = JSON_BOOLEAN;
-						jsonFalse.value.boolean = false;
-						stackOfJsonValues_.GetHead().value.array.Push(jsonFalse);
+						JsonValue jsonFalse(false);
+						// jsonFalse.type = JSON_BOOLEAN;
+						// jsonFalse.value.boolean = false;
+						stackOfJsonValues_.GetHead()->value.array.Push(jsonFalse);
 					}
 				} else if (boolOrNullString == "null") {
 					if (keyFlag) {
 						JsonValue jsonNull;
 						jsonNull.type = JSON_NULL;
 						jsonNull.value.null = NULL;
-						stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = jsonNull;
+						stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = jsonNull;
 					} else {
 						JsonValue jsonNull;
 						jsonNull.type = JSON_NULL;
 						jsonNull.value.null = NULL;
-						stackOfJsonValues_.GetHead().value.array.Push(jsonNull);
+						stackOfJsonValues_.GetHead()->value.array.Push(jsonNull);
 					}
 				}
 			} else if (currentChar_ == '{') {
 				if (stackOfJsonValues_.GetSize() == 0) {
-					JsonValue jsonObject;
-					jsonObject.type = JSON_OBJECT;
-					new (&jsonObject.value.object) HashMap<JsonValue>;
-					stackOfJsonValues_.Push(jsonObject);
+					root_ = new JsonValue;
+					root_->type = JSON_OBJECT;
+					new (&root_->value.object) HashMap<JsonValue>;
+					stackOfJsonValues_.Push(root_);
+				} else if (keyFlag) {
+					JsonValue* jsonObject = new JsonValue;
+					jsonObject->type = JSON_OBJECT;
+					new (&jsonObject->value.object) HashMap<JsonValue>;
+					stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = *jsonObject;
+					stackOfJsonValues_.Push(&stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()]);
+				} else if (!keyFlag) {
+					JsonValue* jsonObject = new JsonValue;
+					jsonObject->type = JSON_OBJECT;
+					new (&jsonObject->value.object) HashMap<JsonValue>;
+					stackOfJsonValues_.GetHead()->value.array.Push(*jsonObject);
+					stackOfJsonValues_.Push(&stackOfJsonValues_.GetHead()->value.array.GetHead());
 				}
-				
+
 				keyFlag = true;
 				std::cout << currentChar_ << std::endl;
-
-				if (keyFlag) {
-					JsonValue jsonObject;
-					jsonObject.type = JSON_OBJECT;
-					new (&jsonObject.value.object) HashMap<JsonValue>;
-					stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = jsonObject;
-					stackOfJsonValues_.Push(jsonObject);
-				} else {
-					JsonValue jsonObject;
-					jsonObject.type = JSON_OBJECT;
-					new (&jsonObject.value.object) HashMap<JsonValue>;
-					stackOfJsonValues_.GetHead().value.array.Push(jsonObject);
-					stackOfJsonValues_.Push(jsonObject);
-				}
 			} else if (currentChar_ == '[') {
 				if (stackOfJsonValues_.GetSize() == 0) {
-					JsonValue jsonArray;
-					jsonArray.type = JSON_ARRAY;
-					new (&jsonArray.value.array) Vector<JsonValue>;
-					stackOfJsonValues_.Push(jsonArray);
+					root_ = new JsonValue;
+					root_->type = JSON_ARRAY;
+					new (&root_->value.array) Vector<JsonValue>;
+					stackOfJsonValues_.Push(root_);
+				} else if (keyFlag) {
+					JsonValue* jsonArray = new JsonValue;
+					jsonArray->type = JSON_ARRAY;
+					new (&jsonArray->value.array) Vector<JsonValue>;
+					stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = *jsonArray;
+					stackOfJsonValues_.Push(&stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()]);
+				} else if (!keyFlag) {
+					JsonValue* jsonArray = new JsonValue;
+					jsonArray->type = JSON_ARRAY;
+					new (&jsonArray->value.array) Vector<JsonValue>;
+					stackOfJsonValues_.GetHead()->value.array.Push(*jsonArray);
+					stackOfJsonValues_.Push(&stackOfJsonValues_.GetHead()->value.array.GetHead());
 				}
-//				fakeStack_.Push('[');
+
 				keyFlag = false;
 				std::cout << currentChar_ << std::endl;
-
-				if (keyFlag) {
-					JsonValue jsonArray;
-					jsonArray.type = JSON_ARRAY;
-					new (&jsonArray.value.array) Vector<JsonValue>;
-					stackOfJsonValues_.GetHead().value.object[lastKey_.c_str()] = jsonArray;
-				} else {
-					JsonValue jsonArray;
-					jsonArray.type = JSON_ARRAY;
-					new (&jsonArray.value.array) Vector<JsonValue>;
-					stackOfJsonValues_.GetHead().value.array.Push(jsonArray);
-				}
 			} else if (currentChar_ == '}') {
 				stackOfJsonValues_.Pop();
-				if (stackOfJsonValues_.GetSize() && stackOfJsonValues_.GetHead().type == JSON_OBJECT)
+				if (stackOfJsonValues_.GetSize() && stackOfJsonValues_.GetHead()->type == JSON_OBJECT)
 					keyFlag = true;
 				else
 					keyFlag = false;
 				std::cout << currentChar_ << std::endl;
 			} else if (currentChar_ == ']') {
 				stackOfJsonValues_.Pop();
-				if (stackOfJsonValues_.GetSize() && stackOfJsonValues_.GetHead().type == JSON_OBJECT)
+				if (stackOfJsonValues_.GetSize() && stackOfJsonValues_.GetHead()->type == JSON_OBJECT)
 					keyFlag = true;
 				else
 					keyFlag = false;

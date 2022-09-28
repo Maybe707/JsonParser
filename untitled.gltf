@@ -1,7 +1,9 @@
 {
     "govno" : 222,
     "hrenata" : 32.2,
+    "kal" : "python",
     "asset" : {
+        "exkrement" : 22.0,
         "generator" : "Khronos glTF Blender I/O v1.6.16",
         "version" : "2.0"
     },
