@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
     parser.Parse();
 
 	GLVM::Core::JsonValue* root = parser.GetRoot();
-
+	
 	std::cout << root->value.object["govno"].value.iNumber << std::endl;
 	std::cout << root->value.object["hrenata"].value.fNumber << std::endl;
 	std::cout << root->value.object["kal"].value.string << std::endl;

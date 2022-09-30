@@ -43,7 +43,7 @@ namespace GLVM::Core
 			
 			if (currentChar_ == '"') {
 				bufferString_ = StringParse();
-				
+
 				if (keyFlag) {
 					JsonValue jsonString(bufferString_);
 					stackOfJsonValues_.GetHead()->value.object[lastKey_.c_str()] = jsonString;

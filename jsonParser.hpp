@@ -26,7 +26,7 @@ namespace GLVM::Core
         JSON_NULL,
         JSON_ARRAY
     };
-
+	
 	struct JsonValue;
 	
     union JsonVariant
@@ -41,7 +41,7 @@ namespace GLVM::Core
         JsonVariant() {}
         ~JsonVariant() {}
     };
-    
+
     struct JsonValue
     {
         JsonVariant value;
