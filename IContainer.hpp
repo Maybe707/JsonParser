@@ -1,14 +1,18 @@
-#ifndef ICONTAINER
-#define ICONTAINER
+unit ICONTAINER;
 
+interface
 
-namespace GLVM::Core
-{
-	class IContainer
-	{
-	public:
-        virtual ~IContainer() {}
-	};
-}
+type
+	TContainer = class
+	public
+		destryctor Destroy; oveeride;
+	end;
 
-#endif
+realization
+
+destryctor TContainer.Destroy;
+begin
+	Inherited;
+end;
+
+end.
